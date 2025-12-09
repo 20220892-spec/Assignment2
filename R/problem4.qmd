@@ -1,0 +1,101 @@
+---
+title: "Problem4"
+format: html
+editor: visual
+---
+
+##(a)
+
+```{r}
+data(iris)
+
+n <- nrow(iris)
+train_idx <- sample(seq_len(n), size = floor(0.7 * n))
+
+train <- iris[train_idx, ]
+test <- iris[-train_idx, ]
+
+write.csv(train, "train.csv", row.names = FALSE)
+write.csv(test, "test.csv", row.names = FALSE)
+
+head(train)
+```
+
+##(b)
+
+```{python}
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix, accuracy_score
+
+train = pd.read_csv("train.csv")
+test = pd.read_csv("test.csv")
+
+X_train = train.drop(columns=["Species"])
+y_train = train["Species"]
+
+X_test = test.drop(columns=["Species"])
+y_test = test["Species"]
+
+rf = RandomForestClassifier(
+n_estimators = 200,
+random_state = 123
+)
+rf.fit(X_train, y_train)
+
+y_pred = rf.predict(X_test)
+
+cm = confusion_matrix(y_test, y_pred)
+acc = accuracy_score(y_test, y_pred)
+
+cm, acc
+```
+
+##(C)
+
+```{r confusion-matrix, echo = TRUE}
+library(reticulate)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+cm  <- py$cm      
+acc <- py$acc     
+
+cm       
+acc
+
+species_levels <- levels(iris$Species)
+
+cm_df <- as.data.frame(cm)
+colnames(cm_df) <- species_levels
+cm_df$truth <- species_levels
+
+cm_df
+
+cm_long <- cm_df |>
+  pivot_longer(
+    cols = all_of(species_levels),
+    names_to = "pred",
+    values_to = "n"
+  )
+
+ggplot(cm_long, aes(x = truth, y = pred, size = n)) +
+  geom_point() +
+  scale_size_continuous(range = c(2, 12)) +
+  theme_minimal() +
+  labs(
+    title = sprintf(
+      "Iris Random Forest Confusion Matrix (accuracy = %.3f)",
+      acc
+    ),
+    x = "True Species",
+    y = "Predicted Species"
+  )
+```
+
+##(d)
+
+```{r session-info, echo = TRUE}
+sessionInfo()
+```
