@@ -104,7 +104,6 @@ server <- function(input, output, session) {
     X_grid <- matrix(x_grid, ncol = 1)
     y_hat  <- predict(fit, X_grid)
 
-    # 그림: 데이터 + true f + KRR 추정
     plot(
       X[, 1], y,
       pch = 16, col = "grey",

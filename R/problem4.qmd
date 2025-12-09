@@ -3,6 +3,15 @@ title: "Problem4"
 format: html
 editor: visual
 ---
+```{r setup, message=FALSE}
+library(reticulate)
+use_condaenv("r-ml", required = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
 
 ##(a)
 
